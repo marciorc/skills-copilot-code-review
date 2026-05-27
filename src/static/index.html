@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -12,14 +12,22 @@
     />
   </head>
   <body>
-    <div class="announcement-banner">
-      📢 As inscrições para atividades estão abertas até o final do mês. Não perca sua vaga!
-    </div>
     <header>
-      <h1>Mergington High School</h1>
-      <h2>Atividades Extracurriculares</h2>
+      <div class="header-copy">
+        <p class="eyebrow">Vida escolar em movimento</p>
+        <h1>Mergington High School</h1>
+        <h2>Atividades Extracurriculares</h2>
+      </div>
       <div id="user-controls">
         <div id="user-status">
+          <button
+            id="manage-announcements-button"
+            class="icon-button hidden"
+            aria-label="Gerenciar anúncios"
+          >
+            <span>📣</span>
+            <span>Anúncios</span>
+          </button>
           <button id="login-button" class="icon-button">
             <span class="user-icon">👤</span>
             <span>Entrar</span>
@@ -33,6 +41,19 @@
     </header>
 
     <main>
+      <section id="announcements-section" class="announcements-shell hidden" aria-live="polite">
+        <div class="announcements-headline">
+          <div>
+            <p class="announcements-kicker">Comunicados em destaque</p>
+            <h3>Fique por dentro do que importa agora</h3>
+          </div>
+          <p class="announcements-caption">
+            Avisos publicados pela coordenação aparecem aqui conforme a data de vigência.
+          </p>
+        </div>
+        <div id="announcements-list" class="announcements-list"></div>
+      </section>
+
       <section id="activities-container">
         <div class="main-content-layout">
           <!-- Left Sidebar for Filters -->
@@ -41,7 +62,7 @@
             <!-- Search Box -->
             <div class="search-box">
               <input type="text" id="activity-search" placeholder="Buscar atividades..." />
-              <button id="search-button" aria-label="Search">
+              <button id="search-button" aria-label="Buscar atividades">
                 <span class="search-icon">🔍</span>
               </button>
             </div>
@@ -134,6 +155,84 @@
           <button type="submit">Entrar</button>
         </form>
         <div id="login-message" class="hidden message"></div>
+      </div>
+    </div>
+
+    <div id="announcements-modal" class="modal hidden" aria-hidden="true">
+      <div class="modal-content announcements-modal-content">
+        <span class="close-announcements-modal" aria-label="Fechar gerenciador de anúncios">&times;</span>
+        <div class="announcements-modal-header">
+          <div>
+            <p class="announcements-kicker">Painel administrativo</p>
+            <h3>Gerenciar anúncios</h3>
+          </div>
+          <p>Crie avisos com data de expiração e ajuste publicações existentes.</p>
+        </div>
+
+        <div class="announcements-admin-layout">
+          <section class="announcement-admin-list-panel">
+            <div class="panel-header-row">
+              <h4>Anúncios cadastrados</h4>
+              <button id="new-announcement-button" type="button">Novo anúncio</button>
+            </div>
+            <div id="announcements-admin-empty" class="empty-state hidden">
+              Nenhum anúncio cadastrado.
+            </div>
+            <div id="announcements-admin-list" class="announcements-admin-list"></div>
+          </section>
+
+          <section class="announcement-admin-editor-panel">
+            <div class="panel-header-row">
+              <h4 id="announcement-form-title">Novo anúncio</h4>
+              <span id="announcement-editor-status" class="editor-status">Pronto para publicar</span>
+            </div>
+            <form id="announcement-form" class="announcement-form">
+              <div class="form-group">
+                <label for="announcement-title">Título</label>
+                <input
+                  type="text"
+                  id="announcement-title"
+                  maxlength="80"
+                  required
+                  placeholder="Ex.: Semana de inscrições prorrogada"
+                />
+              </div>
+              <div class="form-group">
+                <label for="announcement-message">Mensagem</label>
+                <textarea
+                  id="announcement-message"
+                  maxlength="280"
+                  required
+                  rows="5"
+                  placeholder="Escreva um aviso claro e objetivo para alunos e responsáveis."
+                ></textarea>
+              </div>
+              <div class="announcement-date-grid">
+                <div class="form-group">
+                  <label for="announcement-start-date">Data de início</label>
+                  <input type="date" id="announcement-start-date" />
+                  <small>Opcional. Deixe em branco para publicar imediatamente.</small>
+                </div>
+                <div class="form-group">
+                  <label for="announcement-expiration-date">Data de expiração</label>
+                  <input type="date" id="announcement-expiration-date" required />
+                  <small>Obrigatória. O anúncio deixa de aparecer após essa data.</small>
+                </div>
+              </div>
+              <div class="form-actions">
+                <button id="announcement-delete-button" type="button" class="ghost-danger hidden">
+                  Excluir
+                </button>
+                <button id="announcement-reset-button" type="button" class="ghost-button">
+                  Limpar
+                </button>
+                <button id="announcement-save-button" type="submit">
+                  Salvar anúncio
+                </button>
+              </div>
+            </form>
+          </section>
+        </div>
       </div>
     </div>
 
