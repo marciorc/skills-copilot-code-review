@@ -218,7 +218,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function formatDate(dateText) {
     if (!dateText) {
-      return "Publicacao imediata";
+      return "Publicação imediata";
     }
 
     return new Intl.DateTimeFormat("pt-BR", {
@@ -259,11 +259,11 @@ document.addEventListener("DOMContentLoaded", () => {
     visibility.className = "announcement-pill";
     visibility.textContent = announcement.start_date
       ? `De ${formatDate(announcement.start_date)}`
-      : "Visivel agora";
+      : "Visível agora";
 
     const expiration = document.createElement("span");
     expiration.className = "announcement-pill";
-    expiration.textContent = `Ate ${formatDate(announcement.expires_on)}`;
+    expiration.textContent = `Até ${formatDate(announcement.expires_on)}`;
 
     meta.appendChild(visibility);
     meta.appendChild(expiration);
@@ -292,14 +292,14 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       const response = await fetch("/announcements");
       if (!response.ok) {
-        throw new Error("Falha ao carregar anuncios");
+        throw new Error("Falha ao carregar anúncios");
       }
 
       activeAnnouncements = await response.json();
       renderAnnouncements();
     } catch (error) {
       announcementsSection.classList.add("hidden");
-      console.error("Erro ao carregar anuncios:", error);
+      console.error("Erro ao carregar anúncios:", error);
     }
   }
 
@@ -390,20 +390,20 @@ document.addEventListener("DOMContentLoaded", () => {
       );
 
       if (!response.ok) {
-        throw new Error("Falha ao carregar anuncios para gestao");
+        throw new Error("Falha ao carregar anúncios para gestão");
       }
 
       manageableAnnouncements = await response.json();
       renderAnnouncementsAdminList();
     } catch (error) {
-      console.error("Erro ao carregar lista administrativa de anuncios:", error);
-      showMessage("Nao foi possivel carregar os anuncios para gestao.", "error");
+      console.error("Erro ao carregar lista administrativa de anúncios:", error);
+      showMessage("Não foi possível carregar os anúncios para gestão.", "error");
     }
   }
 
   function openAnnouncementsModal() {
     if (!currentUser) {
-      showMessage("Apenas usuarios autenticados podem gerenciar anuncios.", "error");
+      showMessage("Apenas usuários autenticados podem gerenciar anúncios.", "error");
       return;
     }
 
@@ -972,7 +972,7 @@ document.addEventListener("DOMContentLoaded", () => {
     event.preventDefault();
 
     if (!currentUser) {
-      showMessage("Apenas usuarios autenticados podem gerenciar anuncios.", "error");
+      showMessage("Apenas usuários autenticados podem gerenciar anúncios.", "error");
       return;
     }
 
@@ -984,12 +984,12 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     if (!payload.expires_on) {
-      showMessage("Informe uma data de expiracao para o anuncio.", "error");
+      showMessage("Informe uma data de expiração para o anúncio.", "error");
       return;
     }
 
     if (payload.start_date && payload.start_date > payload.expires_on) {
-      showMessage("A data inicial nao pode ser posterior a expiracao.", "error");
+      showMessage("A data inicial não pode ser posterior à expiração.", "error");
       return;
     }
 
@@ -1012,14 +1012,14 @@ document.addEventListener("DOMContentLoaded", () => {
       const result = await response.json();
 
       if (!response.ok) {
-        showMessage(result.detail || "Nao foi possivel salvar o anuncio.", "error");
+        showMessage(result.detail || "Não foi possível salvar o anúncio.", "error");
         return;
       }
 
       showMessage(
         selectedAnnouncementId
-          ? "Anuncio atualizado com sucesso."
-          : "Anuncio publicado com sucesso.",
+          ? "Anúncio atualizado com sucesso."
+          : "Anúncio publicado com sucesso.",
         "success"
       );
       await fetchManageableAnnouncements();
@@ -1036,8 +1036,8 @@ document.addEventListener("DOMContentLoaded", () => {
         resetAnnouncementForm();
       }
     } catch (error) {
-      console.error("Erro ao salvar anuncio:", error);
-      showMessage("Falha ao salvar anuncio. Tente novamente.", "error");
+      console.error("Erro ao salvar anúncio:", error);
+      showMessage("Falha ao salvar anúncio. Tente novamente.", "error");
     }
   });
 
@@ -1051,7 +1051,7 @@ document.addEventListener("DOMContentLoaded", () => {
     );
 
     showConfirmationDialog(
-      `Excluir o anuncio ${announcement?.title || "selecionado"}?`,
+      `Excluir o anúncio ${announcement?.title || "selecionado"}?`,
       async () => {
         try {
           const response = await fetch(
@@ -1066,17 +1066,17 @@ document.addEventListener("DOMContentLoaded", () => {
           const result = await response.json();
 
           if (!response.ok) {
-            showMessage(result.detail || "Nao foi possivel excluir o anuncio.", "error");
+            showMessage(result.detail || "Não foi possível excluir o anúncio.", "error");
             return;
           }
 
-          showMessage("Anuncio excluido com sucesso.", "success");
+          showMessage("Anúncio excluído com sucesso.", "success");
           await fetchManageableAnnouncements();
           await fetchAnnouncements();
           resetAnnouncementForm();
         } catch (error) {
-          console.error("Erro ao excluir anuncio:", error);
-          showMessage("Falha ao excluir anuncio. Tente novamente.", "error");
+          console.error("Erro ao excluir anúncio:", error);
+          showMessage("Falha ao excluir anúncio. Tente novamente.", "error");
         }
       }
     );
