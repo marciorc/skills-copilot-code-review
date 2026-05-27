@@ -310,9 +310,9 @@ document.addEventListener("DOMContentLoaded", () => {
     announcementEditorStatus.textContent = "Pronto para publicar";
     announcementDeleteButton.classList.add("hidden");
 
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 7);
-    announcementExpirationDateInput.value = tomorrow.toISOString().slice(0, 10);
+    const defaultExpirationDate = new Date();
+    defaultExpirationDate.setDate(defaultExpirationDate.getDate() + 7);
+    announcementExpirationDateInput.value = defaultExpirationDate.toISOString().slice(0, 10);
 
     renderAnnouncementsAdminList();
   }
