@@ -147,13 +147,21 @@ document.addEventListener("DOMContentLoaded", () => {
     const savedUser = localStorage.getItem("currentUser");
     if (savedUser) {
       try {
-        currentUser = JSON.parse(savedUser);
-        updateAuthUI();
-        // Verify the stored user with the server
-        validateUserSession(currentUser.username);
+        const parsedUser = JSON.parse(savedUser);
+
+        if (parsedUser.username && parsedUser.session_token) {
+          currentUser = parsedUser;
+          updateAuthUI();
+          // Verify the stored user with the server
+          validateUserSession(parsedUser.username, parsedUser.session_token);
+        } else {
+          currentUser = null;
+          localStorage.removeItem("currentUser");
+        }
       } catch (error) {
         console.error("Error parsing saved user", error);
-        logout(); // Clear invalid data
+        currentUser = null;
+        localStorage.removeItem("currentUser");
       }
     }
 
@@ -162,10 +170,15 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // Validate user session with the server
-  async function validateUserSession(username) {
+  async function validateUserSession(username, sessionToken) {
     try {
       const response = await fetch(
-        `/auth/check-session?username=${encodeURIComponent(username)}`
+        `/auth/check-session?username=${encodeURIComponent(username)}`,
+        {
+          headers: {
+            "X-Session-Token": sessionToken,
+          },
+        }
       );
 
       if (!response.ok) {
@@ -386,7 +399,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     try {
       const response = await fetch(
-        `/announcements/manage?username=${encodeURIComponent(currentUser.username)}`
+        `/announcements/manage?username=${encodeURIComponent(currentUser.username)}`,
+        {
+          headers: {
+            "X-Session-Token": currentUser.session_token,
+          },
+        }
       );
 
       if (!response.ok) {
@@ -1005,6 +1023,7 @@ document.addEventListener("DOMContentLoaded", () => {
         method,
         headers: {
           "Content-Type": "application/json",
+          "X-Session-Token": currentUser.session_token,
         },
         body: JSON.stringify(payload),
       });
@@ -1060,6 +1079,9 @@ document.addEventListener("DOMContentLoaded", () => {
             )}?username=${encodeURIComponent(currentUser.username)}`,
             {
               method: "DELETE",
+              headers: {
+                "X-Session-Token": currentUser.session_token,
+              },
             }
           );
 

@@ -6,11 +6,12 @@ from datetime import date
 from uuid import uuid4
 from typing import Any, Dict, List, Optional
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, Header, HTTPException, Query
 from pydantic import BaseModel, Field, field_validator, model_validator
 from pymongo import ReturnDocument
 
-from ..database import announcements_collection, teachers_collection
+from ..database import announcements_collection
+from .auth import require_authenticated_session
 
 router = APIRouter(
     prefix="/announcements",
@@ -50,13 +51,11 @@ def _serialize_announcement(document: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
-def _require_authenticated_user(username: Optional[str]) -> Dict[str, Any]:
+def _require_authenticated_user(username: Optional[str], session_token: str) -> Dict[str, Any]:
     if not username:
         raise HTTPException(status_code=401, detail="Authentication required")
 
-    teacher = teachers_collection.find_one({"_id": username})
-    if not teacher:
-        raise HTTPException(status_code=401, detail="Invalid teacher credentials")
+    teacher = require_authenticated_session(username, session_token)
     if teacher.get("role") != "admin":
         raise HTTPException(status_code=403, detail="Admin access required")
 
@@ -83,9 +82,12 @@ def list_active_announcements() -> List[Dict[str, Any]]:
 
 
 @router.get("/manage", response_model=List[Dict[str, Any]])
-def list_all_announcements(username: str = Query(...)) -> List[Dict[str, Any]]:
+def list_all_announcements(
+    username: str = Query(...),
+    session_token: str = Header(..., alias="X-Session-Token")
+) -> List[Dict[str, Any]]:
     """Return all announcements for authenticated management screens."""
-    _require_authenticated_user(username)
+    _require_authenticated_user(username, session_token)
     documents = announcements_collection.find({}).sort([("expires_on", 1), ("title", 1)])
     return [_serialize_announcement(document) for document in documents]
 
@@ -94,10 +96,11 @@ def list_all_announcements(username: str = Query(...)) -> List[Dict[str, Any]]:
 @router.post("/", response_model=Dict[str, Any], status_code=201)
 def create_announcement(
     payload: AnnouncementPayload,
-    username: str = Query(...)
+    username: str = Query(...),
+    session_token: str = Header(..., alias="X-Session-Token")
 ) -> Dict[str, Any]:
     """Create a new announcement. Authentication required."""
-    teacher = _require_authenticated_user(username)
+    teacher = _require_authenticated_user(username, session_token)
 
     document = {
         "_id": uuid4().hex,
@@ -116,10 +119,11 @@ def create_announcement(
 def update_announcement(
     announcement_id: str,
     payload: AnnouncementPayload,
-    username: str = Query(...)
+    username: str = Query(...),
+    session_token: str = Header(..., alias="X-Session-Token")
 ) -> Dict[str, Any]:
     """Update an existing announcement. Authentication required."""
-    teacher = _require_authenticated_user(username)
+    _require_authenticated_user(username, session_token)
 
     result = announcements_collection.find_one_and_update(
         {"_id": announcement_id},
@@ -141,9 +145,13 @@ def update_announcement(
 
 
 @router.delete("/{announcement_id}", response_model=Dict[str, str])
-def delete_announcement(announcement_id: str, username: str = Query(...)) -> Dict[str, str]:
+def delete_announcement(
+    announcement_id: str,
+    username: str = Query(...),
+    session_token: str = Header(..., alias="X-Session-Token")
+) -> Dict[str, str]:
     """Delete an announcement. Authentication required."""
-    _require_authenticated_user(username)
+    _require_authenticated_user(username, session_token)
     result = announcements_collection.delete_one({"_id": announcement_id})
 
     if result.deleted_count == 0:
