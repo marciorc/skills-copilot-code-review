@@ -34,7 +34,7 @@ class AnnouncementPayload(BaseModel):
 
     @model_validator(mode="after")
     def validate_dates(self) -> "AnnouncementPayload":
-        if self.start_date and self.start_date > self.expires_on:
+        if self.start_date and self.start_date >= self.expires_on:
             raise ValueError("Start date must be before expiration date")
         return self
 
