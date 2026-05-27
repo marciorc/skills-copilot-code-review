@@ -217,8 +217,8 @@ initial_teachers = [
 initial_announcements = [
     {
         "_id": "welcome-open-enrollment",
-        "title": "Inscricoes abertas para atividades",
-        "message": "As inscricoes para atividades extracurriculares ja estao abertas. Revise os horarios e garanta as vagas com antecedencia.",
+        "title": "Inscrições abertas para atividades",
+        "message": "As inscrições para atividades extracurriculares já estão abertas. Revise os horários e garanta as vagas com antecedência.",
         "start_date": None,
         "expires_on": "2026-12-31",
         "created_by": "principal"
