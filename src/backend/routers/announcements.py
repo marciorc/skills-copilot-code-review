@@ -126,8 +126,7 @@ def update_announcement(
                 "title": payload.title,
                 "message": payload.message,
                 "start_date": payload.start_date.isoformat() if payload.start_date else None,
-                "expires_on": payload.expires_on.isoformat(),
-                "created_by": teacher["_id"]
+                "expires_on": payload.expires_on.isoformat()
             }
         },
         return_document=ReturnDocument.AFTER
